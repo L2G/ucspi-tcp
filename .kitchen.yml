@@ -13,6 +13,7 @@ platforms:
     run_list:
       - recipe[apt::default]
   - name: debian-7.6
+  - name: centos-7.0
   - name: centos-6.6
   - name: centos-6.5
   - name: centos-5.10
