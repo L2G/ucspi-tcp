@@ -3,6 +3,15 @@ require 'spec_helper'
 describe 'ucspi-tcp::default' do
   let(:chef_log) { class_spy(Chef::Log) }
 
+  shared_examples 'a default package installation' do
+    specify { expect(chef_run).to install_package('ucspi-tcp') }
+    specify { expect(chef_run.node['ucspi']['bin_dir']).to eq('/usr/bin') }
+  end
+
+  shared_examples 'a default source build and installation' do
+    pending
+  end
+
   context 'on Arch Linux' do
     let(:chef_run) do
       runner = ChefSpec::SoloRunner.new do |node|
@@ -14,6 +23,7 @@ describe 'ucspi-tcp::default' do
 
     specify { expect(chef_run).to build_pacman_aur('ucspi-tcp') }
     specify { expect(chef_run).to install_pacman_aur('ucspi-tcp') }
+    specify { expect(chef_run.node['ucspi']['bin_dir']).to eq('/usr/bin') }
   end
 
   context 'on Debian 7.5' do
@@ -22,7 +32,7 @@ describe 'ucspi-tcp::default' do
         .converge(described_recipe)
     end
 
-    specify { expect(chef_run).to install_package('ucspi-tcp') }
+    it_should_behave_like 'a default package installation'
   end
 
   context 'on Gentoo' do
@@ -32,6 +42,16 @@ describe 'ucspi-tcp::default' do
     end
 
     specify { expect(chef_run).to install_package('sys-apps/ucspi-tcp') }
+    specify { expect(chef_run.node['ucspi']['bin_dir']).to eq('/usr/bin') }
+  end
+
+  context 'on Ubuntu 14.04' do
+    let(:chef_run) do
+      ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '14.04')
+        .converge(described_recipe)
+    end
+
+    it_should_behave_like 'a default package installation'
   end
 
   context 'on an unknown distro' do
